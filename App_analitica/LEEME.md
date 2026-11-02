@@ -8,6 +8,7 @@ App web para subir un CSV y hacerle todo el análisis del curso de Inteligencia 
 | Exploración | Estadísticas, distribuciones, dispersión, correlación, atípicos (IQR), normalidad | Estadísticas básicas |
 | No supervisados → ACP y clustering | ACP (varianza, plano principal, círculo, integrado, cos²), K-means (codo, perfil, radar), HAC (dendrograma), t-SNE, UMAP | discoveR |
 | Supervisados → Clasificación | Los 5 del Laboratorio 2 (KNN, Árboles de Decisión, Random Forest, XGBoost, AdaBoost) y además Gradient Boosting, SVM, Bayes, logística, LDA, QDA y red neuronal. Configuración estándar y variaciones (las del notebook del Lab 2 con un clic), imputación, escalado y selección de atributos (SelectKBest); historial de experimentos y mejor modelo por algoritmo (F1 macro, AUC, ...); PG/EG, PP/PN/AP/AN/PFP/PFN, Precision, Recall, F1, matriz de confusión, ROC, importancia de variables, árbol, validación cruzada, curva k; predicción de datos nuevos | predictoR + Laboratorio 2 |
+| Supervisados → Regresión | Los del Laboratorio 3 por familia: lineales (simple, múltiple, Lasso, LassoCV, Ridge, RidgeCV), núcleos (SVR rbf, lineal, polinomial) y árboles (Árbol de regresión, Random Forest, XGBoost), además Gradient Boosting y KNN. Configuración estándar y variaciones (las del notebook del Lab 3 con un clic), imputación, escalado y selección de atributos; RMSE, MAE, ER y R²; mejor modelo por algoritmo y por familia; real vs predicción, residuos, coeficientes, alpha óptimo, importancia de variables, árbol; ruta de regularización y curvas de hiperparámetros; benchmarking con validación cruzada repetida y pruebas de Friedman y Wilcoxon (Holm); predicción de datos nuevos | predictoR + Laboratorio 3 |
 
 ## Cómo correrla (Windows)
 
@@ -30,11 +31,14 @@ nucleo/                 el framework de la clase (sin interfaz)
   eda.py                EDA: clase base
   no_supervisado.py     NoSupervisado(EDA): ACP, K-means, HAC, t-SNE, UMAP
   clasificacion.py      SupervisadoLab(EDA) -> ClasificacionLab (Laboratorio 2 + resto del curso)
+  regresion.py          SupervisadoReg(EDA) -> RegresionLab (Laboratorio 3 + resto del curso)
   graficos.py           paleta y plantilla de los gráficos
 vistas/                 una página por sección del menú
-datos_ejemplo/          iris, cáncer de mama, USCrime, potabilidad y predicción de diabetes (Lab 2)
+datos_ejemplo/          iris, cáncer de mama, USCrime (Lab 1 y Lab 3), potabilidad y predicción de diabetes (Lab 2)
 .streamlit/config.toml  colores del tema
 ```
 
 Convención de la matriz de confusión: filas = valor real, columnas = predicción.
 PP = VP/(VP+FN), PN = VN/(VN+FP), AP = VP/(VP+FP), AN = VN/(VN+FN), PFP = FP/(FP+VN), PFN = FN/(FN+VP).
+
+Índices de regresión: RMSE = √(Σ(y−ŷ)²/n), MAE = Σ|y−ŷ|/n, ER = Σ|y−ŷ|/Σ|y| (error relativo, como en el código guía), R² = 1 − Σ(y−ŷ)²/Σ(y−ȳ)². En RMSE, MAE y ER el mejor modelo es el de menor valor; en R², el de mayor.

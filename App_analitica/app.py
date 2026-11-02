@@ -1,5 +1,5 @@
 """
-app.py - Aplicación de analítica de datos (EDA, no supervisado y clasificación).
+app.py - Aplicación de analítica de datos (EDA, no supervisado, clasificación y regresión).
 Ejecutar con:  streamlit run app.py
 """
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from vistas import carga, clasificacion, exploracion, inicio, no_supervisado
+from vistas import carga, clasificacion, exploracion, inicio, no_supervisado, regresion
 from vistas.comunes import iniciar_estado, tarjeta_dataset_lateral
 from vistas.estilo import aplicar_estilo
 
@@ -25,6 +25,7 @@ p_carga = st.Page(carga.pagina, title="Carga de datos", icon=":material/upload_f
 p_eda = st.Page(exploracion.pagina, title="Exploración", icon=":material/query_stats:", url_path="exploracion")
 p_nosup = st.Page(no_supervisado.pagina, title="ACP y clustering", icon=":material/bubble_chart:", url_path="no-supervisado")
 p_clas = st.Page(clasificacion.pagina, title="Clasificación", icon=":material/category:", url_path="clasificacion")
+p_reg = st.Page(regresion.pagina, title="Regresión", icon=":material/trending_up:", url_path="regresion")
 
 # referencias para los botones que cambian de página
 st.session_state["_pagina_carga"] = p_carga
@@ -34,7 +35,7 @@ navegacion = st.navigation({
     "": [p_inicio],
     "Datos": [p_carga, p_eda],
     "No supervisados": [p_nosup],
-    "Supervisados": [p_clas],
+    "Supervisados": [p_clas, p_reg],
 })
 tarjeta_dataset_lateral()
 navegacion.run()

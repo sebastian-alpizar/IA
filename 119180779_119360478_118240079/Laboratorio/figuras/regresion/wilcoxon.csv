@@ -1,0 +1,10 @@
+Mejor,Contra,Diferencia RMSE,p,p Holm,Significativa
+"SVR (C=1, epsilon=0.05, gamma=0.002)",Lineal simple (PctKids2Par),0.025452,0.0,0.0,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)","DT (max_depth=5, min_samples_leaf=20)",0.023787,0.0,0.0,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)",Lineal múltiple (estándar),0.005854,1e-06,5e-06,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)","Lasso (alpha=0.001, sin escalar)",0.00554,1e-06,7e-06,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)",LassoCV (cv=10),0.004497,6e-06,3e-05,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)",Ridge (alpha=100),0.00387,1.8e-05,7.3e-05,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)",RidgeCV (cv=10),0.003908,2.4e-05,7.3e-05,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)","RF (n_estimators=500, max_features=0.33, min_samples_leaf=5)",0.002614,0.008705,0.017411,sí
+"SVR (C=1, epsilon=0.05, gamma=0.002)","XGBoost (n_estimators=500, learning_rate=0.02, max_depth=3, subsample=0.8, colsample_bytree=0.5)",0.002173,0.063556,0.063556,no

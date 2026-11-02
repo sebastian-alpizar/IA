@@ -14,7 +14,7 @@ EJEMPLOS = {
     "Cáncer de mama (clasificación binaria)": "cancer_mama.csv",
     "Potabilidad del agua (Lab 2, clasificación binaria)": "potabilidad.csv",
     "Predicción de diabetes (Lab 2, clasificación binaria, 100 000 filas)": "diabetes_prediccion.csv",
-    "USCrime (no supervisado, 1994 comunidades)": "USCrime.csv",
+    "USCrime (no supervisado y regresión del Lab 3, 1994 comunidades)": "USCrime.csv",
 }
 SEPARADORES = {"Coma": ",", "Punto y coma": ";", "Tab": "\t", "|": "|"}
 DECIMALES = {"Punto": ".", "Coma": ","}

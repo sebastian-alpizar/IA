@@ -17,23 +17,13 @@ class Clasificacion(Supervisado):
       de la librería); los parámetros extra (**parametros) van directo al estimador,
       así se prueban las variaciones de configuración.
     - Opciones de preprocesamiento: escalar, imputacion y n_atributos (selección de atributos).
+    - nombre_config, comparar, nombres_atributos e importancia_variables se heredan de Supervisado
+      (los comparte con Regresion).
     """
 
     def __init__(self, dataframe: pd.DataFrame, variable_predecir, test_size=0.25,
-                 eliminar_duplicados=True, semilla=42):
-        super().__init__(dataframe, variable_predecir, test_size, eliminar_duplicados, semilla)
-
-    @staticmethod
-    def nombre_config(algoritmo, parametros, escalar=None, n_atributos=None, imputacion="median"):
-        # ej. "KNN (n_neighbors=15, weights=distance)" o "KNN (estándar)"
-        partes = [f"{k}={v}" for k, v in parametros.items()]
-        if escalar is False:
-            partes.append("sin escalar")
-        if imputacion != "median":
-            partes.append(f"imputación {imputacion}")
-        if n_atributos is not None:
-            partes.append(f"{n_atributos} atributos")
-        return f"{algoritmo} ({', '.join(partes) if partes else 'estándar'})"
+                 eliminar_duplicados=True, semilla=42, excluir=None):
+        super().__init__(dataframe, variable_predecir, test_size, eliminar_duplicados, semilla, excluir)
 
     # =================================================================
     # Algoritmos
@@ -68,42 +58,9 @@ class Clasificacion(Supervisado):
         modelo = AdaBoostClassifier(estimator=base, random_state=self.semilla, **parametros)
         return self.entrenar(nombre, modelo, "AdaBoost", escalar, imputacion, n_atributos)
 
-    def comparar(self, algoritmo, configuraciones):
-        """
-        Corre varias configuraciones de un mismo algoritmo y retorna sus índices.
-        algoritmo: 'knn', 'arbol', 'bosque', 'xgboost' o 'adaboost'
-        configuraciones: lista de dicts, ej. [{}, {"n_neighbors": 15}, {"escalar": False}]
-        """
-        metodo = getattr(self, algoritmo)
-        filas = [metodo(**conf) for conf in configuraciones]
-        return pd.DataFrame(filas)
-
     # =================================================================
     # Análisis del modelo
     # =================================================================
-    def nombres_atributos(self, nombre=None):
-        # nombres de las variables después del one-hot y la selección de atributos
-        pipe = (self.experimentos[nombre] if nombre else self.ultimo)["pipeline"]
-        nombres = pipe.named_steps["prep"].get_feature_names_out()
-        if "seleccion" in pipe.named_steps:
-            nombres = pipe.named_steps["seleccion"].get_feature_names_out(nombres)
-        return list(nombres)
-
-    def importancia_variables(self, nombre=None):
-        pipe = (self.experimentos[nombre] if nombre else self.ultimo)["pipeline"]
-        modelo = pipe.named_steps["modelo"]
-        if not hasattr(modelo, "feature_importances_"):
-            raise ValueError("El modelo no calcula importancia de variables (ej. KNN).")
-        return pd.Series(modelo.feature_importances_, index=self.nombres_atributos(nombre),
-                         name="importancia").sort_values(ascending=False).round(4)
-
-    def graficar_importancia(self, nombre=None, top=15, titulo=None):
-        imp = self.importancia_variables(nombre).head(top)
-        plt.figure(figsize=(8, max(3, len(imp) * 0.4)))
-        plt.barh(imp.index[::-1], imp.values[::-1], color="steelblue")
-        plt.title(titulo or f"Importancia de variables: {nombre or 'último modelo'}")
-        plt.xlabel("Importancia")
-
     def graficar_arbol(self, nombre=None, profundidad=3):
         pipe = (self.experimentos[nombre] if nombre else self.ultimo)["pipeline"]
         modelo = pipe.named_steps["modelo"]

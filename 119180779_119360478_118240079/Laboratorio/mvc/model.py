@@ -1,19 +1,23 @@
 import pandas as pd
 from no_supervisado import NoSupervisado   # carpeta no_supervisado/
 from clasificacion import Clasificacion    # carpeta clasificacion/
+from regresion import Regresion            # carpeta regresion/
 
 class DataFrameModel:
     """
     Modelo que encapsula la lógica de negocio.
     Se conecta con NoSupervisado (que hereda de EDA) y expone métodos para el Controller.
-    Si se indica variable_predecir se conecta con Clasificacion (Supervisado -> EDA).
+    Si se indica variable_predecir se conecta con Clasificacion o, con tipo="regresion",
+    con Regresion (las dos heredan de Supervisado -> EDA).
     """
 
-    def __init__(self, ruta_csv, sep=",", variable_predecir=None, **kwargs):
+    def __init__(self, ruta_csv, sep=",", variable_predecir=None, tipo="clasificacion", **kwargs):
         datos = pd.read_csv(ruta_csv, sep=sep)
         datos.columns = datos.columns.str.strip()   # el USCrime trae espacios en los nombres
         if variable_predecir is None:
             self.df = NoSupervisado(datos)
+        elif tipo == "regresion":
+            self.df = Regresion(datos, variable_predecir, **kwargs)
         else:
             self.df = Clasificacion(datos, variable_predecir, **kwargs)
 
@@ -113,3 +117,28 @@ class DataFrameModel:
     def graficar_comparacion(self, **kwargs): self.df.graficar_comparacion(**kwargs)
     def graficar_importancia(self, **kwargs): self.df.graficar_importancia(**kwargs)
     def graficar_arbol(self, **kwargs): self.df.graficar_arbol(**kwargs)
+
+    # --- Supervisados: regresión ---
+    def resumen_variable(self): return self.df.resumen_variable()
+    def correlacion_respuesta(self, top=None): return self.df.correlacion_respuesta(top)
+    def lineal_simple(self, **kwargs): return self.df.lineal_simple(**kwargs)
+    def lineal_multiple(self, **kwargs): return self.df.lineal_multiple(**kwargs)
+    def lasso(self, **kwargs): return self.df.lasso(**kwargs)
+    def lasso_cv(self, **kwargs): return self.df.lasso_cv(**kwargs)
+    def ridge(self, **kwargs): return self.df.ridge(**kwargs)
+    def ridge_cv(self, **kwargs): return self.df.ridge_cv(**kwargs)
+    def svr(self, **kwargs): return self.df.svr(**kwargs)
+    def mejores(self, criterio="RMSE", por="Algoritmo"): return self.df.mejores(criterio, por)
+    def parametro_optimo(self, nombre=None): return self.df.parametro_optimo(nombre)
+    def coeficientes(self, nombre=None, top=None): return self.df.coeficientes(nombre, top)
+    def residuos(self, nombre=None): return self.df.residuos(nombre)
+    def curva_parametro(self, **kwargs): return self.df.curva_parametro(**kwargs)
+    def buscar_hiperparametros(self, **kwargs): return self.df.buscar_hiperparametros(**kwargs)
+    def ruta_regularizacion(self, **kwargs): return self.df.ruta_regularizacion(**kwargs)
+    def benchmark(self, **kwargs): return self.df.benchmark(**kwargs)
+    def resumen_benchmark(self, **kwargs): return self.df.resumen_benchmark(**kwargs)
+    def prueba_estadistica(self, **kwargs): return self.df.prueba_estadistica(**kwargs)
+    def graficar_real_vs_predicho(self, **kwargs): self.df.graficar_real_vs_predicho(**kwargs)
+    def graficar_residuos(self, **kwargs): self.df.graficar_residuos(**kwargs)
+    def graficar_coeficientes(self, **kwargs): self.df.graficar_coeficientes(**kwargs)
+    def graficar_benchmark(self, **kwargs): self.df.graficar_benchmark(**kwargs)

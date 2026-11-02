@@ -160,7 +160,7 @@ class DataFrameController:
                 return self.model.umap(kwargs.get("n_neighbors", 15), kwargs.get("min_dist", 0.1),
                                        kwargs.get("colores"), kwargs.get("titulo", "UMAP"))
 
-            # --- Supervisados: clasificación ---
+            # --- Supervisados: clasificación (y lo común con regresión) ---
             elif metodo == "Distribución clases":
                 self.view.mostrar(self.model.distribucion_clases())
 
@@ -191,8 +191,9 @@ class DataFrameController:
                 self.view.mostrar_indices(self.model.resultados(kwargs.get("algoritmo")))
 
             elif metodo == "Mejor modelo":
-                mejor = self.model.mejor_modelo(kwargs.get("criterio", "AUC"), kwargs.get("algoritmo"))
-                self.view.mostrar_mensaje(f"Mejor modelo según {kwargs.get('criterio', 'AUC')}: {mejor['Modelo']}")
+                criterio = kwargs.get("criterio", "AUC")
+                mejor = self.model.mejor_modelo(criterio, kwargs.get("algoritmo"))
+                self.view.mostrar_mensaje(f"Mejor modelo según {criterio}: {mejor['Modelo']}")
                 self.view.mostrar_indices(mejor.to_frame().T.infer_objects())
                 return mejor["Modelo"]
 
@@ -212,6 +213,67 @@ class DataFrameController:
 
             elif metodo == "Graficar árbol":
                 self.model.graficar_arbol(**kwargs)
+
+            # --- Supervisados: regresión ---
+            elif metodo == "Resumen variable":
+                self.view.mostrar(self.model.resumen_variable())
+
+            elif metodo == "Correlación respuesta":
+                self.view.mostrar(self.model.correlacion_respuesta(kwargs.get("top")))
+
+            elif metodo in ("Lineal simple", "Lineal múltiple", "Lasso", "LassoCV", "Ridge", "RidgeCV", "SVR"):
+                algoritmos = {"Lineal simple": "lineal_simple", "Lineal múltiple": "lineal_multiple",
+                              "Lasso": "lasso", "LassoCV": "lasso_cv", "Ridge": "ridge",
+                              "RidgeCV": "ridge_cv", "SVR": "svr"}
+                indices = getattr(self.model, algoritmos[metodo])(**kwargs)
+                self.view.mostrar_indices(indices)
+                return indices
+
+            elif metodo == "Mejores":
+                tabla = self.model.mejores(kwargs.get("criterio", "RMSE"), kwargs.get("por", "Algoritmo"))
+                self.view.mostrar_indices(tabla)
+                return tabla
+
+            elif metodo == "Parámetro óptimo":
+                self.view.mostrar(self.model.parametro_optimo(kwargs.get("nombre")))
+
+            elif metodo == "Coeficientes":
+                self.model.graficar_coeficientes(**kwargs)
+                return self.model.coeficientes(kwargs.get("nombre"), kwargs.get("top"))
+
+            elif metodo == "Real vs predicho":
+                self.model.graficar_real_vs_predicho(**kwargs)
+
+            elif metodo == "Residuos":
+                self.model.graficar_residuos(**kwargs)
+
+            elif metodo == "Curva parámetro":
+                tabla = self.model.curva_parametro(**kwargs)
+                self.view.mostrar_indices(tabla)
+                return tabla
+
+            elif metodo == "Buscar hiperparámetros":
+                tabla = self.model.buscar_hiperparametros(**kwargs)
+                self.view.mostrar_indices(tabla)
+                return tabla
+
+            elif metodo == "Ruta regularización":
+                tabla = self.model.ruta_regularizacion(**kwargs)
+                return tabla
+
+            elif metodo == "Benchmark":
+                tabla = self.model.benchmark(**kwargs)
+                self.view.mostrar_indices(self.model.resumen_benchmark())
+                return tabla
+
+            elif metodo == "Gráfico benchmark":
+                self.model.graficar_benchmark(**kwargs)
+
+            elif metodo == "Prueba estadística":
+                friedman, comparaciones = self.model.prueba_estadistica(**kwargs)
+                self.view.mostrar(friedman)
+                self.view.mostrar(comparaciones)
+                return friedman, comparaciones
 
             # --- Exportación ---
             elif metodo == "Guardar CSV":
