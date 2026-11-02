@@ -139,19 +139,21 @@ class NoSupervisado(EDA):
         return fig
 
     def fig_circulo(self, ejes=(0, 1), top=None):
+        """
+        Círculo de correlación: una flecha por variable, todas con el mismo trazo.
+        top: dibuja solo las `top` variables mejor representadas en el plano (mayor cos²).
+        """
         corr = self.__acp["corr"].iloc[:, list(ejes)]
-        cos2 = (corr ** 2).sum(axis=1)
-        mostrar = cos2.sort_values(ascending=False).index[:top] if top else corr.index
+        cos2 = (corr ** 2).sum(axis=1).sort_values(ascending=False)
+        mostrar = list(cos2.index[:top] if top else cos2.index)
         fig = go.Figure()
         t = np.linspace(0, 2 * np.pi, 200)
-        fig.add_trace(go.Scatter(x=np.cos(t), y=np.sin(t), mode="lines", line=dict(color=g.AZUL_CLARO),
+        fig.add_trace(go.Scatter(x=np.cos(t), y=np.sin(t), mode="lines", line=dict(color=g.AZUL_CLARO, width=1.5),
                                  hoverinfo="skip", showlegend=False))
-        for var in corr.index:
+        for var in mostrar:
             x, y = corr.loc[var].values
-            destacado = var in mostrar
             fig.add_annotation(x=x, y=y, ax=0, ay=0, xref="x", yref="y", axref="x", ayref="y",
-                               showarrow=True, arrowhead=2, arrowsize=1, arrowwidth=1.3,
-                               arrowcolor=g.AZUL if destacado else "#C9D2DE")
+                               showarrow=True, arrowhead=2, arrowsize=1, arrowwidth=1.6, arrowcolor=g.AZUL)
         # variables con flechas casi iguales se rotulan juntas para que no se encimen
         grupos = []
         for var in mostrar:
@@ -167,14 +169,19 @@ class NoSupervisado(EDA):
             fig.add_annotation(x=x, y=y, text="<br>".join(gr["n"]), showarrow=False, align="left" if x >= 0 else "right",
                                xanchor="left" if x >= 0 else "right", font=dict(size=10, color=g.AZUL),
                                bgcolor="rgba(255,255,255,0.75)")
-        fig.add_trace(go.Scatter(x=corr.iloc[:, 0], y=corr.iloc[:, 1], mode="markers",
-                                 marker=dict(size=4, color="rgba(0,0,0,0)"), text=corr.index,
-                                 hovertemplate="%{text}<br>(%{x:.2f}, %{y:.2f})<extra></extra>", showlegend=False))
+        fig.add_trace(go.Scatter(x=corr.loc[mostrar].iloc[:, 0], y=corr.loc[mostrar].iloc[:, 1], mode="markers",
+                                 marker=dict(size=4, color="rgba(0,0,0,0)"), text=mostrar,
+                                 customdata=cos2.loc[mostrar].values,
+                                 hovertemplate="%{text}<br>(%{x:.2f}, %{y:.2f})<br>cos² = %{customdata:.2f}"
+                                               "<extra></extra>", showlegend=False))
         fig.add_hline(y=0, line_dash="dash", line_color=g.BORDE)
         fig.add_vline(x=0, line_dash="dash", line_color=g.BORDE)
-        fig.update_layout(height=560, title="Círculo de correlación",
-                          xaxis=dict(range=[-1.2, 1.2], title=self._etiqueta_eje(ejes[0]), scaleanchor="y"),
-                          yaxis=dict(range=[-1.2, 1.2], title=self._etiqueta_eje(ejes[1])))
+        # misma escala en los dos ejes (el círculo se ve redondo) y sin espacio de sobra a los lados
+        fig.update_layout(height=600, title="Círculo de correlación",
+                          xaxis=dict(range=[-1.4, 1.4], title=self._etiqueta_eje(ejes[0]), scaleanchor="y",
+                                     scaleratio=1, constrain="domain", zeroline=False),
+                          yaxis=dict(range=[-1.4, 1.4], title=self._etiqueta_eje(ejes[1]), constrain="domain",
+                                     zeroline=False))
         return fig
 
     def fig_integrado(self, ejes=(0, 1), top=15, color=None):

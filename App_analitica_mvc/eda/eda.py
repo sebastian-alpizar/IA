@@ -149,14 +149,18 @@ class EDA:
         fig.update_layout(height=460, title=f"{y} contra {x}")
         return fig
 
-    def fig_correlacion(self, metodo="pearson", anotar=True):
+    def fig_correlacion(self, metodo="pearson"):
+        """Mapa de calor de la matriz de correlación con el valor escrito en cada celda."""
         c = self.correlacion(metodo)
+        n = len(c)
+        letra = 12 if n <= 12 else 10 if n <= 20 else 9 if n <= 30 else 7
         fig = go.Figure(go.Heatmap(z=c.values, x=c.columns, y=c.index, zmin=-1, zmax=1,
                                    colorscale=g.DIVERGENTE, colorbar=dict(title="r"),
-                                   text=np.round(c.values, 2) if anotar and len(c) <= 20 else None,
-                                   texttemplate="%{text}" if anotar and len(c) <= 20 else None,
+                                   texttemplate="%{z:.2f}", textfont=dict(size=letra),
+                                   xgap=1, ygap=1,
                                    hovertemplate="%{y} / %{x}: %{z:.3f}<extra></extra>"))
-        alto = min(900, max(420, 22 * len(c)))
-        fig.update_layout(height=alto, title=f"Matriz de correlación ({metodo})",
-                          yaxis=dict(autorange="reversed"))
+        alto = max(420, 30 * n + 160)        # celdas de ~30 px para que el número se lea
+        fig.update_layout(height=alto, title=f"Matriz de correlación ({metodo})", plot_bgcolor="#FFFFFF",
+                          xaxis=dict(automargin=True, tickangle=-45, showgrid=False),
+                          yaxis=dict(autorange="reversed", automargin=True, showgrid=False))
         return fig

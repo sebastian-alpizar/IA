@@ -9,8 +9,14 @@ import streamlit as st
 
 from mvc.Controller import EJEMPLOS
 
-SEPARADORES = {"Coma": ",", "Punto y coma": ";", "Tab": "\t", "|": "|"}
-DECIMALES = {"Punto": ".", "Coma": ","}
+# Etiqueta que se muestra -> carácter que se usa al leer
+SEPARADORES = {",": ",", ";": ";", "Tab": "\t", "|": "|"}
+DECIMALES = {"Punto .": ".", "Coma ,": ","}
+
+
+def _nombre(opciones, simbolo):
+    """Etiqueta de un separador o decimal, ej. '\\t' -> 'Tab', '.' -> 'Punto .'."""
+    return next((k for k, s in opciones.items() if s == simbolo), simbolo)
 
 
 def _opciones():
@@ -21,8 +27,8 @@ def _opciones():
 def _cargar(ctrl, accion):
     """Carga (archivo o ejemplo) y deja los controles de lectura con lo que se detectó."""
     formato = accion()
-    st.session_state.sel_sep = next(k for k, sep in SEPARADORES.items() if sep == formato["sep"])
-    st.session_state.sel_dec = next(k for k, dec in DECIMALES.items() if dec == formato["decimal"])
+    st.session_state.sel_sep = _nombre(SEPARADORES, formato["sep"])
+    st.session_state.sel_dec = _nombre(DECIMALES, formato["decimal"])
     st.rerun()   # para que la barra lateral muestre el dataset nuevo
 
 
@@ -51,17 +57,19 @@ def pagina(ctrl):
             c1, c2 = st.columns(2)
             with c1:
                 st.segmented_control("Separador de datos", list(SEPARADORES), key="sel_sep",
-                                     default="Coma" if "sel_sep" not in st.session_state else None,
+                                     help="Coma ( , ), punto y coma ( ; ), tabulador o barra ( | ).",
+                                     default=next(iter(SEPARADORES)) if "sel_sep" not in st.session_state else None,
                                      disabled=not hay_archivo)
                 st.checkbox("La primera fila tiene los nombres", True, key="sel_enc", disabled=not hay_archivo)
             with c2:
                 st.segmented_control("Separador decimal", list(DECIMALES), key="sel_dec",
-                                     default="Punto" if "sel_dec" not in st.session_state else None,
+                                     default=next(iter(DECIMALES)) if "sel_dec" not in st.session_state else None,
                                      disabled=not hay_archivo)
                 st.checkbox("La primera columna son nombres de fila", False, key="sel_idx", disabled=not hay_archivo)
             if hay_archivo:
                 fmt = m.archivo["formato"]
-                st.caption(f"Detectado automáticamente: separador «{repr(fmt['sep'])[1:-1]}», decimal «{fmt['decimal']}», "
+                st.caption(f"Detectado automáticamente: separador «{_nombre(SEPARADORES, fmt['sep'])}», "
+                           f"decimal «{_nombre(DECIMALES, fmt['decimal'])}», "
                            f"codificación {fmt['encoding']}.")
             if st.button("Volver a leer con estas opciones", disabled=not hay_archivo, type="primary"):
                 if st.session_state.sel_sep and st.session_state.sel_dec:

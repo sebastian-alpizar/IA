@@ -77,8 +77,9 @@ def pagina(ctrl):
             c1, c2 = st.columns([1, 3])
             metodo = c1.radio("Método", ["pearson", "spearman", "kendall"], key="eda_met",
                               help="Pearson: relación lineal. Spearman/Kendall: por rangos, más robustos a atípicos.")
-            if len(num) > 40:
-                elegidas = c2.multiselect("Variables (son muchas, escogé algunas)", num, default=num[:25])
+            if len(num) > 30:
+                elegidas = c2.multiselect("Variables (son muchas: escogé hasta unas 30 para que se lean los valores)",
+                                          num, default=num[:20])
                 sub = ctrl.model.eda(elegidas) if len(elegidas) > 1 else e
             else:
                 sub = e

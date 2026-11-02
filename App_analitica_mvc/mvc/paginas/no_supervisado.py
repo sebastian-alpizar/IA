@@ -67,8 +67,8 @@ def pagina(ctrl):
             st.plotly_chart(ns.fig_plano((e1, e2), color, color_sel, etiquetas=len(ns.indice) <= 60), width="stretch", key="ns2")
             st.caption("Cada punto es un individuo. Individuos cercanos tienen valores parecidos en las variables.")
         with a3:
-            top = st.slider("Variables con nombre (las mejor representadas)", 5, len(cols), min(12, len(cols)),
-                            key="acp_top")
+            top = st.slider("Variables a dibujar (las mejor representadas en el plano)", 2, len(cols),
+                            min(15, len(cols)), key="acp_top")
             st.plotly_chart(ns.fig_circulo((e1, e2), top), width="stretch", key="ns3")
             st.caption("Flecha larga = variable bien representada. Flechas en la misma dirección = correlación "
                        "positiva; opuestas = negativa; en ángulo recto = sin relación.")
