@@ -1,0 +1,8 @@
+streamlit>=1.46
+pandas
+numpy
+scipy
+scikit-learn
+plotly
+umap-learn
+xgboost

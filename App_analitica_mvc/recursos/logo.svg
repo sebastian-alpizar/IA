@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="40" viewBox="0 0 220 40">
+  <rect x="2" y="22" width="7" height="14" rx="2" fill="#8FA3BF"/>
+  <rect x="12" y="13" width="7" height="23" rx="2" fill="#2B4C7E"/>
+  <rect x="22" y="5" width="7" height="31" rx="2" fill="#1C3558"/>
+  <text x="38" y="27" font-family="IBM Plex Sans, Helvetica, Arial, sans-serif" font-size="19" font-weight="600" fill="#1E2A2A">Analítica</text>
+</svg>
